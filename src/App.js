@@ -5,19 +5,25 @@ import Poster from './Poster'
 import Display from './Display'
 import Form from './Form'
 
+
 function App() {
   
   const [bounties, setBounties] = useState([])
   const [current, setCurrent] = useState({})
 
   useEffect(()=>{
+    getBounties()
+  }, [])
+  
+  const getBounties = () => {
     fetch('http://localhost:8001/bounties') // <- make sure nothing is active here
     .then(response => response.json())
     .then(foundBounties => {
       console.table(foundBounties)
       setBounties(foundBounties)
     })
-  }, [])
+    .catch(err => console.table(err))
+  }
 
   // ! Helper Methods
 
@@ -44,7 +50,7 @@ const posters = bounties.map(b=>{
         {posters}
       </section>
       <section className="App-header">
-        <Form />
+        <Form refreshBounties={getBounties}/>
       </section>
     </div>
   );

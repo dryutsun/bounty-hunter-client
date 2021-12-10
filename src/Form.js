@@ -1,10 +1,17 @@
 import {useState} from 'react'
 
-function Form() {
+
+function Form(props) {
 
     // Helper Method in COMPONENT?
     
-    const [newBounty, setNewBounty] = useState({})
+    const [newBounty, setNewBounty] = useState({
+        name: "",
+        wantedFor: "",
+        client: "",
+        reward: 100000,
+        captured: false
+    })
     
     const handleChange = (e) => {
         setNewBounty({...newBounty, [e.target.name]: e.target.value})
@@ -20,8 +27,8 @@ function Form() {
         e.preventDefault()
         let preJSONBody = {
             name: newBounty.name,
-            name: newBounty.wantedFor,
-            name: newBounty.client,
+            wantedFor: newBounty.wantedFor,
+            client: newBounty.client,
             reward: Number(newBounty.reward),
             captured: Boolean(newBounty.checked)
         }
@@ -32,32 +39,42 @@ function Form() {
         })
             .then(response => response.json())
             .then(postedBounty => {
-                setNewBounty({})
+                props.refreshBounties()
+                setNewBounty({
+                    name: "",
+                    wantedFor: "",
+                    client: "",
+                    reward: 100000,
+                    captured: false
+                })
+                
+
             })
             .catch(err=>console.table(err))
     }
 
     return(
-        <form>
+        <form onSubmit={postBounty}>
             <div>
                 <label htmlFor="name">Name:</label>
-                <input onChange={handleChange} type="text" name="name" id="name" />
+                <input onChange={handleChange} type="text" name="name" id="name" value={newBounty.name}/>
             </div>
             <div>
                 <label htmlFor="client">Client: </label>
-                <input onChange={handleChange} type="text" name="client" id="client" />
+                <input onChange={handleChange} type="text" name="client" id="client" value={newBounty.client}/>
             </div>
             <div>
                 <label htmlFor="wantedFor">Wanted For: </label>
-                <input onChange={handleChange} type="text" name="wantedFor" id="wantedFor" />
+                <input onChange={handleChange} type="text" name="wantedFor" id="wantedFor" value={newBounty.wantedFor}/>
             </div>
             <div>
                 <label htmlFor="reward">Reward</label>
-                <input onChange={handleChange} type="number" name="reward" id="reward" />
+                <input onChange={handleChange} type="number" name="reward" id="reward" value={newBounty.reward}/>
             </div>
             <div>
                 <label htmlFor="captured">Captured?</label>
-                <input onChange={handleChange} type="checkbox" name="captured" id="captured" />
+                <input type="checkbox" name="captured" id="captured"
+                    onChange={handleCheck} checked={newBounty.captured ? "checked" : ""} />
             </div>
             <input type="submit" value="POST" />
         </form>
